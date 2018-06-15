@@ -47,7 +47,7 @@ class CreditCardDelete extends React.Component {
 	render() {
 		return (
 			<div className="credit-card-delete" key={ this.props.card.stored_details_id }>
-				<StoredCard card={ this.props.card } />
+				<StoredCard { ...this.props.card } />
 
 				{ this.renderDeleteButton() }
 			</div>
