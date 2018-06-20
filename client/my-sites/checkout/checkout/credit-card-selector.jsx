@@ -41,7 +41,12 @@ class CreditCardSelector extends React.Component {
 				<CreditCard
 					key={ card.stored_details_id }
 					className="checkout__payment-box-section"
-					card={ card }
+					card={ {
+						lastDigits: card.card,
+						cardType: card.card_type,
+						name: card.name,
+						expiry: card.expiry,
+					} }
 					selected={ card.stored_details_id === this.state.section }
 					onSelect={ onSelect }
 				/>
