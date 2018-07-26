@@ -360,6 +360,7 @@ const SecurePaymentForm = createReactClass( {
 			case 'ideal':
 			case 'p24':
 			case 'brazil-tef':
+			case 'wechat':
 				return (
 					<div>
 						{ this.renderGreatChoiceHeader() }
