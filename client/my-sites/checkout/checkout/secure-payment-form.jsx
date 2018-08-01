@@ -271,7 +271,7 @@ const SecurePaymentForm = createReactClass( {
 	},
 
 	renderWeChatPaymentBox() {
-		let userAgent = new UserAgent().parse(navigator.userAgent);
+		const userAgent = new UserAgent().parse(navigator.userAgent);
 
 		// If mobile we can send the user directly to the wechat app to confirm payment.
 		if ( userAgent.isMobile === true ) {
