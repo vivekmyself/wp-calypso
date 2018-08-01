@@ -886,6 +886,7 @@
 
 	.checkout__alipay {
 		width: 100px;
+		height: 24px;
 	}
 
 	.checkout__eps {
@@ -913,8 +914,10 @@
 	}
 
 	.checkout__wechat {
-		width: 80px;
+		height: 24px;
+		margin-right: 5px;
 	}
+
 
 	.select-dropdown__item-text {
 		top: 4px;
