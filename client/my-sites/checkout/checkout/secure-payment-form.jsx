@@ -8,6 +8,7 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 import { get, find, defer } from 'lodash';
 import { connect } from 'react-redux';
+import { UserAgent } from 'express-useragent';
 
 /**
  * Internal dependencies
@@ -269,6 +270,29 @@ const SecurePaymentForm = createReactClass( {
 		);
 	},
 
+	renderWeChatPaymentBox() {
+		let userAgent = new UserAgent().parse(navigator.userAgent);
+
+		// If mobile we can send the user directly to the wechat app to confirm payment.
+		if ( userAgent.isMobile === true ) {
+			return this.renderRedirectPaymentBox( 'wechat' );
+		}
+
+		// On Desktop, we need to render the QR Code which they can scan with WeChat
+		return (
+			<PaymentBox
+				classSet="wechat-payment-box"
+				cart={ this.props.cart }
+				paymentMethods={ this.props.paymentMethods }
+				currentPaymentMethod="wechat"
+				onSelectPaymentMethod={ this.selectPaymentBox }
+			>
+				<QueryPaymentCountries />
+				<QRCode value={ this.props.redirectTo } />
+			</PaymentBox>
+		);
+	},
+
 	renderRedirectPaymentBox( paymentType ) {
 		return (
 			<PaymentBox
@@ -353,6 +377,13 @@ const SecurePaymentForm = createReactClass( {
 						{ this.renderEmergentPaywallBox() }
 					</div>
 				);
+			case 'wechat':
+				return (
+					<div>
+						{ this.renderGreatChoiceHeader() }
+						{ this.renderWeChatPaymentBox() }
+					</div>
+				);
 			case 'alipay':
 			case 'bancontact':
 			case 'eps':
@@ -360,7 +391,6 @@ const SecurePaymentForm = createReactClass( {
 			case 'ideal':
 			case 'p24':
 			case 'brazil-tef':
-			case 'wechat':
 				return (
 					<div>
 						{ this.renderGreatChoiceHeader() }
