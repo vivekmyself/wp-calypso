@@ -222,7 +222,7 @@ function paymentMethodClassName( method ) {
 		paypal: 'WPCOM_Billing_PayPal_Express',
 		p24: 'WPCOM_Billing_Stripe_Source_P24',
 		'brazil-tef': 'WPCOM_Billing_Ebanx_Redirect_Brazil_Tef',
-		'wechat': 'WPCOM_Billing_Stripe_Source_WeChat',
+		wechat: 'WPCOM_Billing_Stripe_Source_Wechat',
 	};
 
 	return paymentMethodsClassNames[ method ] || '';
