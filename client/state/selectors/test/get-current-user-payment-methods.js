@@ -124,12 +124,4 @@ describe( 'getCurrentUserPaymentMethods()', () => {
 		] );
 	} );
 
-	// todo need?
-	// test( 'zh-TW should return CC, Alipay, WeChat, PayPal', () => {
-	// 	update( 'geo', 'success', 'TW' );
-
-	// 	expect( getCurrentUserPaymentMethods( countryStateFromLocale('cn') ) ).to.eql( [
-	// 		'credit-card', 'alipay', 'wechat', 'paypal'
-	// 	] );
-	// } );
 } );
