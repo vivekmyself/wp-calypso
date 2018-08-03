@@ -185,6 +185,21 @@ export class RedirectPaymentBox extends PureComponent {
 					disabled: false,
 				} );
 			} else if ( result.redirect_url ) {
+				// The Wechat payment type should only redirect when on mobile as redirect urls
+				// are Wechat Pay mobile application urls: e.g. weixin://wxpay/bizpayurl?pr=RaXzhu4
+				if ( this.props.paymentType  === 'wechat' ) {
+					const userAgent = new UserAgent().parse(navigator.userAgent);
+
+					if ( ! userAgent.isMobile ) {
+						this.setSubmitState( {
+							info: translate( 'Generating WeChat Payment code.' ),
+							disabled: true,
+						} );
+
+						console.log( 'redirect url', result.redirect_url );
+					}
+				}
+
 				this.setSubmitState( {
 					info: translate( 'Redirecting you to the payment partner to complete the payment.' ),
 					disabled: true,
