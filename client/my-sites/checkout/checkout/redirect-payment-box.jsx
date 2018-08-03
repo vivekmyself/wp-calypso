@@ -7,6 +7,7 @@ import React, { PureComponent, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { snakeCase, some, map, zipObject, isEmpty, mapValues } from 'lodash';
 import { UserAgent } from 'express-useragent';
+import QRCode from 'qrcode.react';
 
 /**
  * Internal dependencies
@@ -50,6 +51,7 @@ export class RedirectPaymentBox extends PureComponent {
 		this.state = {
 			errorMessages: [],
 			paymentDetails: this.setPaymentDetailsState( props.paymentType ),
+			qrCodeUrl: null,
 		};
 	}
 
@@ -185,6 +187,15 @@ export class RedirectPaymentBox extends PureComponent {
 					disabled: false,
 				} );
 			} else if ( result.redirect_url ) {
+				this.setSubmitState( {
+					info: translate( 'Redirecting you to the payment partner to complete the payment.' ),
+					disabled: true,
+				} );
+				analytics.ga.recordEvent( 'Upgrades', 'Clicked Checkout With Redirect Payment Button' );
+				analytics.tracks.recordEvent(
+					'calypso_checkout_with_redirect_' + snakeCase( this.props.paymentType )
+				);
+
 				// The Wechat payment type should only redirect when on mobile as redirect urls
 				// are Wechat Pay mobile application urls: e.g. weixin://wxpay/bizpayurl?pr=RaXzhu4
 				if ( this.props.paymentType  === 'wechat' ) {
@@ -196,22 +207,17 @@ export class RedirectPaymentBox extends PureComponent {
 							disabled: true,
 						} );
 
-						console.log( 'redirect url', result.redirect_url );
+						this.setState( {
+							qrCodeUrl: result.redirect_url,
+						} );
+						return;
 					}
 				}
 
-				this.setSubmitState( {
-					info: translate( 'Redirecting you to the payment partner to complete the payment.' ),
-					disabled: true,
-				} );
-				analytics.ga.recordEvent( 'Upgrades', 'Clicked Checkout With Redirect Payment Button' );
-				analytics.tracks.recordEvent(
-					'calypso_checkout_with_redirect_' + snakeCase( this.props.paymentType )
-				);
 				location.href = result.redirect_url;
 			}
 		} );
-	};
+	}
 
 	renderButtonText() {
 		if ( cartValues.cartItems.hasRenewalItem( this.props.cart ) ) {
@@ -299,6 +305,15 @@ export class RedirectPaymentBox extends PureComponent {
 			} )
 		);
 		const showPaymentChatButton = this.props.presaleChatAvailable && hasBusinessPlanInCart;
+
+		// Wechat qr codes get set on desktop instead of redirecting
+		if ( this.state.qrCodeUrl ) {
+			return (
+				<React.Fragment>
+					<QRCode value={ this.state.qrCodeUrl } />
+				</React.Fragment>
+			);
+		}
 
 		return (
 			<React.Fragment>
