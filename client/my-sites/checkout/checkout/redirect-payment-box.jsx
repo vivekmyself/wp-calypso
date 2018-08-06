@@ -204,7 +204,7 @@ export class RedirectPaymentBox extends PureComponent {
 					if ( ! userAgent.isMobile ) {
 						this.setSubmitState( {
 							info: translate( 'Generating WeChat Payment code.', {
-								context: 'Providing feedback that we are generating a barcode behind the scenes.'
+								comment: 'Providing feedback that we are generating a barcode behind the scenes.'
 							}),
 							disabled: true,
 						} );
@@ -246,7 +246,7 @@ export class RedirectPaymentBox extends PureComponent {
 					price: this.props.cart.total_cost_display,
 					paymentProvider: this.getPaymentProviderName(),
 				},
-				context: 'Instruction to scan a QR barcode and finalize payment with wechat for a subscription service.',
+				comment: 'Instruction to scan a QR barcode and finalize payment with wechat for a subscription service.',
 			} );
 		}
 
@@ -255,7 +255,7 @@ export class RedirectPaymentBox extends PureComponent {
 				price: this.props.cart.total_cost_display,
 				paymentProvider: this.getPaymentProviderName(),
 			},
-			context: 'Instruction to scan a QR barcode and finalize payment with WeChat Pay.',
+			comment: 'Instruction to scan a QR barcode and finalize payment with WeChat Pay.',
 		} );
 	}
 
@@ -264,7 +264,7 @@ export class RedirectPaymentBox extends PureComponent {
 			components: {
 				a: <a href={ this.state.qrCodeUrl } />,
 			},
-			context: 'Asking if mobile detection failed and they would like to open and be redirected directly into the WeChat app in order to pay.'
+			comment: 'Asking if mobile detection failed and they would like to open and be redirected directly into the WeChat app in order to pay.'
 		} );
 	}
 
@@ -340,7 +340,7 @@ export class RedirectPaymentBox extends PureComponent {
 		// Wechat qr codes get set on desktop instead of redirecting
 		if ( this.state.qrCodeUrl ) {
 			this.setSubmitState( {
-				info: translate( 'Please scan the WeChat Payment barcode.', { context: 'Instruction to scan the on screen barcode.' } ),
+				info: translate( 'Please scan the WeChat Payment barcode.', { comment: 'Instruction to scan the on screen barcode.' } ),
 				disabled: true,
 			} );
 			return (
