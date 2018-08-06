@@ -81,6 +81,12 @@ function setup() {
 	// manifest is part of PWA spec, and needs to be dynamic so we can inject l10n, branchName and other context
 	app.use( manifest() );
 
+	// this is used from the service worker to cache all our assets on load
+	app.use(
+		'/assets.json',
+		express.static( path.resolve( __dirname, '..', 'bundler', 'asset-files.json' ) )
+	);
+
 	// loaded when we detect stats blockers - see lib/analytics/index.js
 	app.get( '/nostats.js', function( request, response ) {
 		analytics.tracks.recordEvent(
