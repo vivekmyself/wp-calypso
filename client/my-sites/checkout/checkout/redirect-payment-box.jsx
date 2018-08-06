@@ -198,12 +198,14 @@ export class RedirectPaymentBox extends PureComponent {
 
 				// The Wechat payment type should only redirect when on mobile as redirect urls
 				// are Wechat Pay mobile application urls: e.g. weixin://wxpay/bizpayurl?pr=RaXzhu4
-				if ( this.props.paymentType  === 'wechat' ) {
-					const userAgent = new UserAgent().parse(navigator.userAgent);
+				if ( 'wechat' === this.props.paymentType ) {
+					const userAgent = new UserAgent().parse( navigator.userAgent );
 
 					if ( ! userAgent.isMobile ) {
 						this.setSubmitState( {
-							info: translate( 'Generating WeChat Payment code.' ),
+							info: translate( 'Generating WeChat Payment code.', {
+								context: 'Providing feedback that we are generating a barcode behind the scenes.'
+							}),
 							disabled: true,
 						} );
 
@@ -234,6 +236,35 @@ export class RedirectPaymentBox extends PureComponent {
 				price: this.props.cart.total_cost_display,
 				paymentProvider: this.getPaymentProviderName(),
 			},
+		} );
+	}
+
+	renderWechatScanText() {
+		if ( cartValues.cartItems.hasRenewalItem( this.props.cart ) ) {
+			return translate( 'Scan the barcode to confirm your %(price)s subscription with %(paymentProvider)s.', {
+				args: {
+					price: this.props.cart.total_cost_display,
+					paymentProvider: this.getPaymentProviderName(),
+				},
+				context: 'Instruction to scan a QR barcode and finalize payment with wechat for a subscription service.',
+			} );
+		}
+
+		return translate( 'Scan the barcode to confirm your %(price)s purchase with %(paymentProvider)s.', {
+			args: {
+				price: this.props.cart.total_cost_display,
+				paymentProvider: this.getPaymentProviderName(),
+			},
+			context: 'Instruction to scan a QR barcode and finalize payment with WeChat Pay.',
+		} );
+	}
+
+	renderWechatRedirectText() {
+		return translate( 'On mobile? To open and pay with the WeChat Pay app directly {{a}}click here{{/a}}.', {
+			components: {
+				a: <a href={ this.state.qrCodeUrl } />,
+			},
+			context: 'Asking if mobile detection failed and they would like to open and be redirected directly into the WeChat app in order to pay.'
 		} );
 	}
 
@@ -308,9 +339,17 @@ export class RedirectPaymentBox extends PureComponent {
 
 		// Wechat qr codes get set on desktop instead of redirecting
 		if ( this.state.qrCodeUrl ) {
+			this.setSubmitState( {
+				info: translate( 'Please scan the WeChat Payment barcode.', { context: 'Instruction to scan the on screen barcode.' } ),
+				disabled: true,
+			} );
 			return (
 				<React.Fragment>
-					<QRCode value={ this.state.qrCodeUrl } />
+					<p class="checkout__payment-qrcode-instruction">{ this.renderWechatScanText() }</p>
+					<div class="checkout__payment-qrcode">
+						<QRCode value={ this.state.qrCodeUrl } />
+					</div>
+					<p class="checkout__payment-qrcode-redirect">{ this.renderWechatRedirectText() }</p>
 				</React.Fragment>
 			);
 		}
