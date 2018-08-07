@@ -13,10 +13,12 @@ const CopyWebpackPlugin = require( path.resolve(
 	__rootDir,
 	'server/bundler/copy-webpack-plugin'
 ) );
+const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const getBaseConfig = require( path.join( __rootDir, 'webpack.config.js' ) );
 
 const omitPlugins = [
 	CopyWebpackPlugin,
+	MiniCssExtractPlugin,
 	webpack.HotModuleReplacementPlugin,
 ];
 
@@ -45,6 +47,9 @@ exports.compile = args => {
 	};
 
 	const name = path.basename( path.dirname( options.editorScript ).replace( /\/$/, '' ) );
+	const styleFile = options.outputEditorFile
+		? options.outputEditorFile.replace( '.js', '.css' )
+		: `${ name }.css`;
 	const baseConfig = getBaseConfig( { extensionName: name } );
 
 	const config = {
@@ -73,6 +78,9 @@ exports.compile = args => {
 			},
 			plugins: [
 				...baseConfig.plugins.filter( plugin => omitPlugins.indexOf( plugin.constructor ) < 0 ),
+				new MiniCssExtractPlugin( {
+					filename: styleFile,
+				} ),
 			],
 		},
 	};
