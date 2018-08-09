@@ -38,7 +38,7 @@ export class WechatPaymentBox extends PureComponent {
 	static propTypes = {
 		cart: PropTypes.object.isRequired,
 		transaction: PropTypes.object.isRequired,
-		redirectTo: PropTypes.func.isRequired,
+		redirectTo: PropTypes.func.isRequired, // on success
 	};
 
 	constructor( props ) {
@@ -156,9 +156,7 @@ export class WechatPaymentBox extends PureComponent {
 		if ( userAgent.isMobile ) {
 			notices.info( translate( 'Redirecting you to the WeChat Pay mobile app to finalize payment.' ) );
 
-			this.setState( { submitEnabled: false } );
-
-			location.href = result.redirect_url;
+			location.assign( result.redirect_url );
 
 			// Redirect on mobile
 			return;
@@ -172,7 +170,6 @@ export class WechatPaymentBox extends PureComponent {
 		this.setState( {
 			redirectUrl: result.redirect_url,
 			orderId: result.order_id,
-			submitEnabled: false,
 		} );
 	}
 
@@ -242,7 +239,7 @@ export class WechatPaymentBox extends PureComponent {
 		// Wechat qr codes get set on desktop instead of redirecting
 		if ( this.state.redirectUrl ) {
 			return <React.Fragment>
-				<QueryOrderTransaction orderId={ this.state.orderId } pollIntervalMs={ 2000 } />
+				<QueryOrderTransaction orderId={ this.state.orderId } pollIntervalMs={ 1000 } />
 
 				<p className="checkout__payment-qrcode-instruction">
 					{ translate( 'Scan the barcode to confirm your %(price)s payment with WeChat Pay.', {

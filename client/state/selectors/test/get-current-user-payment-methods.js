@@ -102,7 +102,8 @@ describe( 'getCurrentUserPaymentMethods()', () => {
 	test( 'BR should return credit card primary, tef, and PayPal secondary', () => {
 		update( 'geo', 'success', 'BR' );
 
-		let countryState = countryStateFromLocale('pt-br');
+		const countryState = countryStateFromLocale('pt-br');
+
 		countryState.geo = {
 			geo: {
 				country_short: 'BR',
