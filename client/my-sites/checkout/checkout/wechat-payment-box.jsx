@@ -124,44 +124,55 @@ export class WechatPaymentBox extends PureComponent {
 		};
 
 		// get the redirect URL from rest endpoint
-		wpcom.undocumented().transactions( 'POST', dataForApi, ( error, result ) => {
-			if ( error ) {
-				this.setState( { submitEnabled: true } );
+		wpcom.undocumented().transactions( 'POST', dataForApi, this.handleTransactionResponse);
+	}
 
-				if ( error.message ) {
-					notices.error( error.message );
-				} else {
-					notices.error( translate( "We've encountered a problem. Please try again later." ) );
-				}
+	handleTransactionResponse(error, result) {
+		if ( error ) {
+			this.setState( { submitEnabled: true } );
 
-			} else if ( result.redirect_url ) {
-				analytics.ga.recordEvent( 'Upgrades', 'Clicked Checkout With Wechat Payment Button' );
-				analytics.tracks.recordEvent( 'calypso_checkout_with_redirect_wechat' );
-
-				// The Wechat payment type should only redirect when on mobile as redirect urls
-				// are Wechat Pay mobile application urls: e.g. weixin://wxpay/bizpayurl?pr=RaXzhu4
-				const userAgent = new UserAgent().parse( navigator.userAgent );
-
-				if ( userAgent.isMobile ) {
-					notices.info( translate( 'Redirecting you to the WeChat Pay mobile app to finalize payment.' ) );
-					this.setState( { submitEnabled: false } );
-
-					location.href = result.redirect_url;
-
-					// Redirect on mobile
-					return;
-				}
-
-				// Display on desktop
-				notices.info( translate( 'Please scan the WeChat Payment barcode.', {
-					comment: 'Instruction to scan the on screen barcode.'
-				} ) );
-				this.setState( {
-					redirectUrl: result.redirect_url,
-					orderId: result.order_id,
-					submitEnabled: false,
-				} );
+			if ( error.message ) {
+				notices.error( error.message );
+			} else {
+				notices.error( translate( "We've encountered a problem. Please try again later." ) );
 			}
+
+			return;
+		}
+
+		if ( ! result || ! result.redirect_url ) {
+			notices.error( translate( "We've encountered a problem. Please try again later." ) );
+
+			return;
+		}
+
+		analytics.ga.recordEvent( 'Upgrades', 'Clicked Checkout With Wechat Payment Button' );
+		analytics.tracks.recordEvent( 'calypso_checkout_with_redirect_wechat' );
+
+		// The Wechat payment type should only redirect when on mobile as redirect urls
+		// are Wechat Pay mobile application urls: e.g. weixin://wxpay/bizpayurl?pr=RaXzhu4
+		const userAgent = new UserAgent().parse( navigator.userAgent );
+
+		if ( userAgent.isMobile ) {
+			notices.info( translate( 'Redirecting you to the WeChat Pay mobile app to finalize payment.' ) );
+
+			this.setState( { submitEnabled: false } );
+
+			location.href = result.redirect_url;
+
+			// Redirect on mobile
+			return;
+		}
+
+		// Display on desktop
+		notices.info( translate( 'Please scan the WeChat Payment barcode.', {
+			comment: 'Instruction to scan the on screen barcode.'
+		} ) );
+
+		this.setState( {
+			redirectUrl: result.redirect_url,
+			orderId: result.order_id,
+			submitEnabled: false,
 		} );
 	}
 
@@ -219,7 +230,7 @@ export class WechatPaymentBox extends PureComponent {
 	}
 
 	render() {
-		// todo: refactor into PaymentChatButton?
+		// todo: refactor into PaymentChatButton (note duplication in cc,redirect,wechat tests)
 		const hasBusinessPlanInCart = some( this.props.cart.products, ( { product_slug } ) =>
 			planMatches( product_slug, {
 				type: TYPE_BUSINESS,
