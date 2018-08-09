@@ -54,6 +54,11 @@ class ActivityLogItem extends Component {
 
 	confirmRewind = () => this.props.confirmRewind( this.props.activity.rewindId );
 
+	trackItemClick = event => {
+		const { type } = event.target.dataset;
+		recordTracksEvent( 'calypso_activitylog_item_click', { type: type } );
+	};
+
 	renderHeader() {
 		const { activityTitle, actorAvatarUrl, actorName, actorRole, actorType } = this.props.activity;
 
@@ -99,7 +104,9 @@ class ActivityLogItem extends Component {
 		/* There is no great way to generate a more valid React key here
 		 * but the index is probably sufficient because these sub-items
 		 * shouldn't be changing. */
-		return activityDescription.map( ( part, i ) => <FormattedBlock key={ i } content={ part } /> );
+		return activityDescription.map( ( part, i ) => (
+			<FormattedBlock key={ i } content={ part } onClick={ this.trackItemClick } />
+		) );
 	}
 
 	renderItemAction() {

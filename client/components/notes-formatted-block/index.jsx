@@ -4,7 +4,7 @@
  */
 import React from 'react';
 
-export const FormattedBlock = ( { content = {} } ) => {
+export const FormattedBlock = ( { content = {}, onClick = null } ) => {
 	const {
 		siteId,
 		children,
@@ -19,6 +19,7 @@ export const FormattedBlock = ( { content = {} } ) => {
 		themeSlug,
 		themeUri,
 	} = content;
+	const blockProps = {};
 
 	if ( 'string' === typeof content ) {
 		return content;
@@ -29,7 +30,7 @@ export const FormattedBlock = ( { content = {} } ) => {
 	}
 
 	const descent = children.map( ( child, key ) => (
-		<FormattedBlock key={ key } content={ child } />
+		<FormattedBlock key={ key } content={ child } onClick={ onClick } />
 	) );
 
 	switch ( type ) {
@@ -65,7 +66,12 @@ export const FormattedBlock = ( { content = {} } ) => {
 			);
 
 		case 'plugin':
-			return <a href={ `/plugins/${ pluginSlug }/${ siteSlug }` }>{ descent }</a>;
+			blockProps.href = `/plugins/${ pluginSlug }/${ siteSlug }`;
+			if ( onClick ) {
+				blockProps.onClick = onClick;
+				blockProps[ 'data-type' ] = 'plugin';
+			}
+			return <a { ...blockProps }>{ descent }</a>;
 
 		case 'post':
 			return isTrashed ? (
