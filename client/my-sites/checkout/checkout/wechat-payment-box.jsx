@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -124,10 +122,10 @@ export class WechatPaymentBox extends PureComponent {
 		};
 
 		// get the redirect URL from rest endpoint
-		wpcom.undocumented().transactions( 'POST', dataForApi, this.handleTransactionResponse);
+		wpcom.undocumented().transactions( 'POST', dataForApi, this.handleSourceSetupResponse);
 	}
 
-	handleTransactionResponse(error, result) {
+	handleSourceSetupResponse(error, result) {
 		if ( error ) {
 			this.setState( { submitEnabled: true } );
 
@@ -174,55 +172,40 @@ export class WechatPaymentBox extends PureComponent {
 	}
 
 	UNSAFE_componentWillReceiveProps( nextProps ) {
-		const { showErrorNotice } = this.props;
-
 		const slug = get(this.props, 'selectedSite.slug', null);
 
-		// HTTP errors
-		if ( nextProps.error ) {
+		const { showErrorNotice } = this.props;
+
+		const { transactionError, transactionStatus, transactionReceiptId } = nextProps;
+		// HTTP errors + Transaction errors
+		if ( transactionError ||
+			transactionStatus === ORDER_TRANSACTION_STATUS.ERROR ||
+			transactionStatus === ORDER_TRANSACTION_STATUS.FAILURE
+		 ) {
+
 			page( slug ? `/checkout/${ slug }` : '/plans');
 			showErrorNotice( translate( "Sorry, we couldn't process your payment. Please try again later." ) );
 
 			return;
 		}
 
-		if ( nextProps.transaction ) {
-			const { processingStatus } = nextProps.transaction;
+		if (transactionStatus === ORDER_TRANSACTION_STATUS.UNKNOWN ) {
+			// Redirect users back to the plan page so that they won't be stuck here.
+			page( slug ? `/plans/my-plan/${ slug }` : '/plans' );
 
-			if ( processingStatus === ORDER_TRANSACTION_STATUS.SUCCESS ) {
-				const { receiptId } = nextProps.transaction;
+			showErrorNotice( translate( 'Oops! Something went wrong. Please try again later.' ) );
 
-				if ( receiptId ) {
-					page( slug ? `/checkout/thank-you/${ slug }/${ receiptId }` : '/checkout/thank-you/no-site' /* no-site + receiptId errors */ );
-				} else {
-					page( slug ? `/checkout/thank-you/${ slug }` : '/checkout/thank-you/no-site' );
-				}
+			return;
+		}
 
-				return;
+		if ( transactionStatus === ORDER_TRANSACTION_STATUS.SUCCESS ) {
+			if ( transactionReceiptId ) {
+				page( slug ? `/checkout/thank-you/${ slug }/${ transactionReceiptId }` : '/checkout/thank-you/no-site' /* no-site + receiptId errors */ );
+			} else {
+				page( slug ? `/checkout/thank-you/${ slug }` : '/checkout/thank-you/no-site' );
 			}
 
-			// If the processing status indicates that there was something wrong.
-			// It could be because the user has cancelled the payment, or because the payment failed after being authorized
-			if ( processingStatus === ORDER_TRANSACTION_STATUS.ERROR ||
-				processingStatus === ORDER_TRANSACTION_STATUS.FAILURE
-			) {
-				// redirect users back to the checkout page so they can try again.
-				page( slug ? `/checkout/${ slug }` : '/plans');
-
-				showErrorNotice( translate( "Sorry, we couldn't process your payment. Please try again later." ) );
-
-				return;
-			}
-
-			// The API has responded a status string that we don't expect somehow.
-			if ( processingStatus === ORDER_TRANSACTION_STATUS.UNKNOWN ) {
-				// Redirect users back to the plan page so that they won't be stuck here.
-				page( slug ? `/plans/my-plan/${ slug }` : '/plans' );
-
-				showErrorNotice( translate( 'Oops! Something went wrong. Please try again later.' ) );
-
-				return;
-			}
+			return;
 		}
 	}
 
@@ -298,15 +281,18 @@ export class WechatPaymentBox extends PureComponent {
 	}
 }
 
-export default flowRight(
-	localize,
-	connect(
-	    ( state, props ) => ( {
-	        transaction: getOrderTransaction( state, state.orderId ) || props.transaction,
-	        error: getOrderTransactionError( state, state.orderId ),
-	    } ),
-	    {
-	        showErrorNotice: errorNotice,
-	    }
-	)
-)( WechatPaymentBox );
+export default connect(
+	( state ) =>  {
+		const { receiptId, processingStatus } = getOrderTransaction( state, state.orderId );
+
+		return {
+			transactionReceiptId: receiptId,
+			transactionStatus: processingStatus,
+			transactionError: getOrderTransactionError( state, state.orderId ),
+		}
+	},
+	{
+		showErrorNotice: errorNotice,
+	}
+)
+)( localize ( WechatPaymentBox ) );

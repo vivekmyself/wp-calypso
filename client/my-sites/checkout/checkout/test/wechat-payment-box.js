@@ -162,7 +162,7 @@ describe( 'WechatPaymentBox', () => {
 
 		const response = {  redirect_url: 'https://redirect', order_id: 1 };
 
-		instance.handleTransactionResponse( null, response );
+		instance.handleSourceSetupResponse( null, response );
 
 		expect( location.assign ).toHaveBeenCalledWith( response.redirect_url );
 	} );
@@ -177,7 +177,7 @@ describe( 'WechatPaymentBox', () => {
 		const response = {  redirect_url: 'https://redirect', order_id: 1 };
 
 
-		instance.handleTransactionResponse( null, response );
+		instance.handleSourceSetupResponse( null, response );
 
 		expect( location.assign ).not.toHaveBeenCalledWith( response.redirect_url );
 		expect( instance.state.redirectUrl ).toEqual( response.redirect_url );
@@ -193,7 +193,7 @@ describe( 'WechatPaymentBox', () => {
 
 		const response = {  redirect_url: 'https://redirect', order_id: 1 };
 
-		instance.handleTransactionResponse( null, response );
+		instance.handleSourceSetupResponse( null, response );
 
 		expect( wrapper.contains( <QRCode value={ response.redirect_url } /> ) );
 		expect( wrapper.contains( <QueryOrderTransaction orderId={ response.order_id } pollIntervalMs={ 1000 } /> ) );
@@ -203,14 +203,8 @@ describe( 'WechatPaymentBox', () => {
 		const wrapper = shallow( <WechatPaymentBox { ...defaultProps } /> );
 		const instance = wrapper.instance();
 
-		instance.handleTransactionResponse( new Error( "error" ), null );
+		instance.handleSourceSetupResponse( new Error( "error" ), null );
 
 		expect( instance.state.submitEnabled ).toBe( true );
 	});
-
-	// test( '', () => {
-	// 	jest.mock( 'page', identity );
-
-	// } );
-
 });
