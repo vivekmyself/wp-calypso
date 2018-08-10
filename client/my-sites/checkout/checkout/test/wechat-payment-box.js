@@ -31,6 +31,7 @@ import {
 	PLAN_JETPACK_BUSINESS,
 	PLAN_JETPACK_BUSINESS_MONTHLY,
 } from 'lib/plans/constants';
+import { ORDER_TRANSACTION_STATUS } from 'state/order-transactions/constants';
 
 jest.mock( 'lib/cart-values', () => ( {
 	isPaymentMethodEnabled: jest.fn( false ),
@@ -46,22 +47,29 @@ jest.mock( 'i18n-calypso', () => ( {
 	translate: x => x,
 } ) );
 
+jest.mock( 'page', () => jest.fn() );
+
+import page from 'page';
+
 jest.mock( '../terms-of-service', () => {
 	const react = require( 'react' );
 	return class TermsOfService extends react.Component {};
 } );
+
 import TermsOfService from '../terms-of-service';
 
 jest.mock( '../payment-chat-button', () => {
 	const react = require( 'react' );
 	return class PaymentChatButton extends react.Component {};
 } );
+
 import PaymentChatButton from '../payment-chat-button';
 
 jest.mock( 'components/data/query-order-transaction', () => {
 	const react = require( 'react' );
 	return class QueryOrderTransaction extends react.Component {};
 } );
+
 import QueryOrderTransaction from 'components/data/query-order-transaction';
 
 
@@ -83,7 +91,8 @@ const defaultProps = {
 	],
 	paymentType: 'default',
 	transaction: {},
-	redirectTo: identity
+	redirectTo: identity,
+	selectedSite: {slug: 'example.com' },
 };
 
 describe( 'WechatPaymentBox', () => {
@@ -207,4 +216,48 @@ describe( 'WechatPaymentBox', () => {
 
 		expect( instance.state.submitEnabled ).toBe( true );
 	});
+
+	test( 'transaction success triggers page change', () => {
+		const wrapper = shallow( <WechatPaymentBox { ...defaultProps } /> );
+		const instance = wrapper.instance();
+
+		const slug = defaultProps.selectedSite.slug;
+
+		instance.UNSAFE_componentWillReceiveProps( {
+			transactionError: null,
+			transactionStatus: ORDER_TRANSACTION_STATUS.SUCCESS,
+			transactionReceiptId: '1',
+		} );
+
+		expect( page ).toHaveBeenCalledWith( `/checkout/thank-you/${ slug }/1` );
+	} );
+
+	test( 'transaction failure triggers page change', () => {
+		const wrapper = shallow( <WechatPaymentBox { ...defaultProps } /> );
+		const instance = wrapper.instance();
+
+		const slug = defaultProps.selectedSite.slug;
+
+		instance.UNSAFE_componentWillReceiveProps( {
+			transactionError: null,
+			transactionStatus: ORDER_TRANSACTION_STATUS.FAILURE,
+			transactionReceiptId: null,
+		} );
+
+		expect( page ).toHaveBeenCalledWith( `/checkout/${ slug }` );
+	} );
+
+	test( 'transaction unknown triggers page change', () => {
+		const wrapper = shallow( <WechatPaymentBox { ...defaultProps } /> );
+		const instance = wrapper.instance();
+
+		const slug = defaultProps.selectedSite.slug;
+
+		instance.UNSAFE_componentWillReceiveProps( {
+			transactionError: new Error( "Example" )
+		} );
+
+		expect( page ).toHaveBeenCalledWith( `/checkout/${ slug }` );
+	} );
+
 });
