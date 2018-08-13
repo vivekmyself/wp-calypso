@@ -93,6 +93,7 @@ const defaultProps = {
 	transaction: {},
 	redirectTo: identity,
 	selectedSite: {slug: 'example.com' },
+	showErrorNotice: identity,
 };
 
 describe( 'WechatPaymentBox', () => {

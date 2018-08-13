@@ -481,15 +481,16 @@
 		}
 	}
 
-	// Redirect Payment Box
+	// WeChat Payment Box
 	// -----------------------------------
-	.redirect-payment-box {
+	.wechat-payment-box {
 		.payment-box__content {
 			// WeChat Pay QR code Display
-			.checkout__payment-qrcode {
+			.checkout__wechat-qrcode {
 				text-align: center;
+				margin-bottom: 12px;
 			}
-			.checkout__payment-qrcode-redirect {
+			.checkout__wechat-qrcode-redirect {
 				@extend .supporting-text;
 				color: $gray-text-min;
 				font-size: 12px;

@@ -298,7 +298,7 @@ const SecurePaymentForm = createReactClass( {
 	renderWechatPaymentBox( ) {
 		return (
 			<PaymentBox
-				classSet="redirect-payment-box"
+				classSet="wechat-payment-box"
 				cart={ this.props.cart }
 				paymentMethods={ this.props.paymentMethods }
 				currentPaymentMethod={ 'wechat' }
