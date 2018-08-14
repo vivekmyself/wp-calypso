@@ -3,10 +3,9 @@
 /**
  * External dependencies
  */
-import { some, isEmpty, get, mapValues, flowRight } from 'lodash';
+import { some, isEmpty, get, mapValues } from 'lodash';
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import page from 'page';
 import { UserAgent } from 'express-useragent';
 
 /**
@@ -33,6 +32,7 @@ export class WechatPaymentBox extends PureComponent {
 		cart: PropTypes.object.isRequired,
 		transaction: PropTypes.object.isRequired,
 		redirectTo: PropTypes.func.isRequired, // on success
+		selectedSite: PropTypes.object,
 	};
 
 	constructor( props ) {
@@ -180,7 +180,7 @@ export class WechatPaymentBox extends PureComponent {
 
 		// Wechat qr codes get set on desktop instead of redirecting
 		if ( this.state.redirectUrl ) {
-			return <WeChatPaymentQRcode orderId={ this.state.orderId } cart={ this.props.cart } redirectUrl={ this.state.redirectUrl } />
+			return <WeChatPaymentQRcode orderId={ this.state.orderId } cart={ this.props.cart } redirectUrl={ this.state.redirectUrl } slug={ get( this.props, 'selectedSite.slug', null ) } />
 		}
 
 		return <React.Fragment>

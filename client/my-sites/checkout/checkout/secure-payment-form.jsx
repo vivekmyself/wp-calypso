@@ -318,7 +318,6 @@ const SecurePaymentForm = createReactClass( {
 		);
 	},
 
-
 	renderGetDotBlogNotice() {
 		const hasProductFromGetDotBlogSignup = find(
 			this.props.cart.products,

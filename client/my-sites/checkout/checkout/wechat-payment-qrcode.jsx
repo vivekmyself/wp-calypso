@@ -3,7 +3,6 @@
 /**
  * External dependencies
  */
-import { get } from 'lodash';
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -26,14 +25,23 @@ export class WechatPaymentQRCode extends PureComponent {
 		orderId: PropTypes.number.isRequired,
 		redirectUrl: PropTypes.string.isRequired,
 		cart: PropTypes.object.isRequired,
+		slug: PropTypes.string,
+
+		// Redux
+		showErrorNotice: PropTypes.func,
+		transactionReceiptId: PropTypes.number,
+		transactionStatus: PropTypes.string,
+		transactionError: PropTypes.object,
 	};
 
-	componentDidUpdate(prevProps, prevState) {
-		const slug = get(this.props, 'selectedSite.slug', null);
-
-		const { showErrorNotice } = this.props;
-
-		const { transactionError, transactionStatus, transactionReceiptId } = this.props;
+	componentDidUpdate() {
+		const {
+			slug,
+			showErrorNotice,
+			transactionError,
+			transactionStatus,
+			transactionReceiptId
+		} = this.props;
 
 		// HTTP errors + Transaction errors
 		if ( transactionError ||
@@ -84,7 +92,7 @@ export class WechatPaymentQRCode extends PureComponent {
 				<QRCode value={ this.props.redirectUrl } />
 			</div>
 
-			<Spinner className="checkout__wechat-qrcode-waiting-spinner" size={ 30 }/>
+			<Spinner className="checkout__wechat-qrcode-spinner" size={ 30 }/>
 
 			<p className="checkout__wechat-qrcode-redirect">
 				{ translate( 'On mobile? To open and pay with the WeChat Pay app directly, {{a}}click here{{/a}}.', {

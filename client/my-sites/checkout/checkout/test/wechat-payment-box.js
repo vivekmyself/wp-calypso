@@ -9,7 +9,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { identity } from 'lodash';
-import QRCode from 'qrcode.react';
 
 /**
  * Internal dependencies
@@ -31,7 +30,6 @@ import {
 	PLAN_JETPACK_BUSINESS,
 	PLAN_JETPACK_BUSINESS_MONTHLY,
 } from 'lib/plans/constants';
-import { ORDER_TRANSACTION_STATUS } from 'state/order-transactions/constants';
 
 jest.mock( 'lib/cart-values', () => ( {
 	isPaymentMethodEnabled: jest.fn( false ),
@@ -47,10 +45,6 @@ jest.mock( 'i18n-calypso', () => ( {
 	translate: x => x,
 } ) );
 
-jest.mock( 'page', () => jest.fn() );
-
-import page from 'page';
-
 jest.mock( '../terms-of-service', () => {
 	const react = require( 'react' );
 	return class TermsOfService extends react.Component {};
@@ -65,16 +59,12 @@ jest.mock( '../payment-chat-button', () => {
 
 import PaymentChatButton from '../payment-chat-button';
 
-jest.mock( 'components/data/query-order-transaction', () => {
+jest.mock( '../wechat-payment-qrcode', () => {
 	const react = require( 'react' );
-	return class QueryOrderTransaction extends react.Component {};
+	return class WechatPaymentQRCode extends react.Component {};
 } );
 
-import QueryOrderTransaction from 'components/data/query-order-transaction';
-
-
-// Gets rid of warnings such as 'UnhandledPromiseRejectionWarning: Error: No available storage method found.'
-jest.mock( 'lib/user', () => () => {} );
+import WechatPaymentQRCode from '../wechat-payment-qrcode';
 
 const defaultProps = {
 	cart: {},
@@ -163,7 +153,7 @@ describe( 'WechatPaymentBox', () => {
 		} );
 	} );
 
-	test( 'redirects on mobile', () => {
+	test( 'handleSourceSetupResponse redirects on mobile', () => {
 		Object.defineProperty( navigator, "userAgent", {	value: "ios", writable: true } );
 		location.assign = jest.fn(); // https://github.com/facebook/jest/issues/890#issuecomment-295939071
 
@@ -177,7 +167,7 @@ describe( 'WechatPaymentBox', () => {
 		expect( location.assign ).toHaveBeenCalledWith( response.redirect_url );
 	} );
 
-	test( 'does not redirect on desktop', () => {
+	test( 'handleSourceSetupResponse sets state on desktop', () => {
 		Object.defineProperty( navigator, "userAgent", {	value: "windows", writable: true } );
 		location.assign = jest.fn();
 
@@ -205,60 +195,7 @@ describe( 'WechatPaymentBox', () => {
 
 		instance.handleSourceSetupResponse( null, response );
 
-		expect( wrapper.contains( <QRCode value={ response.redirect_url } /> ) );
-		expect( wrapper.contains( <QueryOrderTransaction orderId={ response.order_id } pollIntervalMs={ 1000 } /> ) );
-	} );
-
-	test( 'unblocks user and enables pay button on response error' , () => {
-		const wrapper = shallow( <WechatPaymentBox { ...defaultProps } /> );
-		const instance = wrapper.instance();
-
-		instance.handleSourceSetupResponse( new Error( "error" ), null );
-
-		expect( instance.state.submitEnabled ).toBe( true );
-	});
-
-	test( 'transaction success triggers page change', () => {
-		const wrapper = shallow( <WechatPaymentBox { ...defaultProps } /> );
-		const instance = wrapper.instance();
-
-		const slug = defaultProps.selectedSite.slug;
-
-		instance.UNSAFE_componentWillReceiveProps( {
-			transactionError: null,
-			transactionStatus: ORDER_TRANSACTION_STATUS.SUCCESS,
-			transactionReceiptId: '1',
-		} );
-
-		expect( page ).toHaveBeenCalledWith( `/checkout/thank-you/${ slug }/1` );
-	} );
-
-	test( 'transaction failure triggers page change', () => {
-		const wrapper = shallow( <WechatPaymentBox { ...defaultProps } /> );
-		const instance = wrapper.instance();
-
-		const slug = defaultProps.selectedSite.slug;
-
-		instance.UNSAFE_componentWillReceiveProps( {
-			transactionError: null,
-			transactionStatus: ORDER_TRANSACTION_STATUS.FAILURE,
-			transactionReceiptId: null,
-		} );
-
-		expect( page ).toHaveBeenCalledWith( `/checkout/${ slug }` );
-	} );
-
-	test( 'transaction unknown triggers page change', () => {
-		const wrapper = shallow( <WechatPaymentBox { ...defaultProps } /> );
-		const instance = wrapper.instance();
-
-		const slug = defaultProps.selectedSite.slug;
-
-		instance.UNSAFE_componentWillReceiveProps( {
-			transactionError: new Error( "Example" )
-		} );
-
-		expect( page ).toHaveBeenCalledWith( `/checkout/${ slug }` );
+		expect( wrapper.contains( <WechatPaymentQRCode /> ) );
 	} );
 
 });
