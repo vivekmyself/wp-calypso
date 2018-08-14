@@ -75,6 +75,14 @@ const babelLoader = {
 	},
 };
 
+const sassLoader = {
+	loader: 'sass-loader',
+	options: {
+		includePaths: [ path.join( __dirname, 'client' ) ],
+		data: `@import '${ path.join( __dirname, 'assets/stylesheets/shared/utils' ) }';`,
+	},
+};
+
 /**
  * Converts @wordpress require into window reference
  *
@@ -106,14 +114,11 @@ const wordpressExternals = ( context, request, callback ) =>
  *
  * @see {@link https://webpack.js.org/configuration/configuration-types/#exporting-a-function}
  *
- * @param {object}  env                              additional config options
- * @param {boolean} env.externalizeWordPressPackages whether to bundle or extern the `@wordpress/` packages
- * @param {object}  argv                             given by webpack?
- *
- * @return {object}                                  webpack config
+ * @param  {object}  env                environment options
+ * @param  {string}  env.namespaceSDK   set by bin/sdk/gutenberg.js when building Gutenberg extensions
+ * @return {object}                     webpack config
  */
-// eslint-disable-next-line no-unused-vars
-function getWebpackConfig( { externalizeWordPressPackages = false } = {}, argv ) {
+function getWebpackConfig( { namespaceSDK = '' } = {} ) {
 	const webpackConfig = {
 		bail: ! isDevelopment,
 		context: __dirname,
@@ -179,6 +184,12 @@ function getWebpackConfig( { externalizeWordPressPackages = false } = {}, argv )
 				},
 				{
 					test: /\.(sc|sa|c)ss$/,
+					include: path.join( __dirname, 'client/gutenberg' ),
+					use: _.compact( [ MiniCssExtractPlugin.loader, 'css-loader', sassLoader ] ),
+				},
+				{
+					test: /\.(sc|sa|c)ss$/,
+					exclude: path.join( __dirname, 'client/gutenberg' ),
 					use: _.compact( [
 						MiniCssExtractPlugin.loader,
 						'css-loader',
@@ -188,12 +199,11 @@ function getWebpackConfig( { externalizeWordPressPackages = false } = {}, argv )
 								plugins: [ require( 'autoprefixer' ) ],
 							},
 						},
-						{
-							loader: 'sass-loader',
-							options: {
-								includePaths: [ path.join( __dirname, 'client' ) ],
-							},
+						namespaceSDK && {
+							loader: 'namespace-css-loader',
+							options: `.${ namespaceSDK }`,
 						},
+						sassLoader,
 					] ),
 				},
 				{
