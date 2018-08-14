@@ -11,7 +11,7 @@ import { localize } from 'i18n-calypso';
 import { getSelectedSiteId } from 'state/ui/selectors';
 import isSiteOnPaidPlan from 'state/selectors/is-site-on-paid-plan';
 import classNames from 'classnames';
-import { endsWith, get, includes, times, first } from 'lodash';
+import { get, includes, times, first } from 'lodash';
 
 /**
  * Internal dependencies
