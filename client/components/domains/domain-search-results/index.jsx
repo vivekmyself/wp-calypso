@@ -251,9 +251,7 @@ class DomainSearchResults extends React.Component {
 						domainsWithPlansOnly={ this.props.domainsWithPlansOnly }
 						railcarId={ `${ this.props.railcarSeed }-registration-suggestion-${ i + 2 }` }
 						uiPosition={ i + 2 }
-						fetchAlgo={
-							endsWith( suggestion.domain_name, '.wordpress.com' ) ? 'wpcom' : this.props.fetchAlgo
-						}
+						fetchAlgo={ suggestion.fetch_algo ? suggestion.fetch_algo : this.props.fetchAlgo }
 						query={ this.props.lastDomainSearched }
 						onButtonClick={ this.props.onClickResult }
 					/>

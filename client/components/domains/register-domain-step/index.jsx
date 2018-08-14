@@ -9,6 +9,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
 	compact,
+	endsWith,
 	find,
 	flatten,
 	get,
@@ -796,6 +797,12 @@ class RegisterDomainStep extends React.Component {
 	};
 
 	handleSubdomainSuggestions = ( domain, timestamp ) => subdomainSuggestions => {
+		subdomainSuggestions = subdomainSuggestions.map( suggestion => {
+			suggestion.fetch_algo = endsWith( suggestion.domain_name, '.wordpress.com' )
+				? 'wpcom'
+				: 'dotblogsub';
+			return suggestion;
+		} );
 		this.props.onDomainsAvailabilityChange( true );
 		const timeDiff = Date.now() - timestamp;
 		const analyticsResults = subdomainSuggestions.map( suggestion => suggestion.domain_name );
