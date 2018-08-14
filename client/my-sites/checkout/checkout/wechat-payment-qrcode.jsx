@@ -94,7 +94,7 @@ export class WechatPaymentQRCode extends PureComponent {
 
 			<Spinner className="checkout__wechat-qrcode-spinner" size={ 30 }/>
 
-			<p className="checkout__wechat-qrcode-redirect">
+			<p className="checkout__wechat-qrcode-redirect supporting-text">
 				{ translate( 'On mobile? To open and pay with the WeChat Pay app directly, {{a}}click here{{/a}}.', {
 					components: { a: <a href={ this.props.redirectUrl } /> },
 					comment: 'Asking if mobile detection has failed and they would like to open and be redirected directly into the WeChat app in order to pay.'

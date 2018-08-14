@@ -90,8 +90,6 @@ describe( 'WechatPaymentQRCode', () => {
 			<WechatPaymentQRCode { ...defaultProps } transactionError={ new Error( "Example" ) } />
 		).instance();
 
-
-
 		instance.componentDidUpdate();
 
 		expect( page ).toHaveBeenCalledWith( `/checkout/${ slug }` );
