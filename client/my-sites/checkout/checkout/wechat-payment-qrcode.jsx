@@ -3,7 +3,7 @@
 /**
  * External dependencies
  */
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import page from 'page';
@@ -20,7 +20,7 @@ import { ORDER_TRANSACTION_STATUS } from 'state/order-transactions/constants';
 import QueryOrderTransaction from 'components/data/query-order-transaction';
 import Spinner from 'components/spinner';
 
-export class WechatPaymentQRCode extends PureComponent {
+export class WechatPaymentQRCode extends Component {
 	static propTypes = {
 		orderId: PropTypes.number.isRequired,
 		redirectUrl: PropTypes.string.isRequired,
@@ -34,14 +34,14 @@ export class WechatPaymentQRCode extends PureComponent {
 		transactionError: PropTypes.object,
 	};
 
-	componentDidUpdate() {
+	shouldComponentUpdate(nextProps) {
 		const {
 			slug,
 			showErrorNotice,
 			transactionError,
 			transactionStatus,
 			transactionReceiptId
-		} = this.props;
+		} = nextProps;
 
 		// HTTP errors + Transaction errors
 		if ( transactionError ||
@@ -54,7 +54,7 @@ export class WechatPaymentQRCode extends PureComponent {
 			// https://www.npmjs.com/package/page doesn't seem to have any callback maybe settimeout?
 			showErrorNotice( translate( "Sorry, we couldn't process your payment. Please try again later." ) );
 
-			return;
+			return false;
 		}
 
 		if (transactionStatus === ORDER_TRANSACTION_STATUS.UNKNOWN ) {
@@ -63,7 +63,7 @@ export class WechatPaymentQRCode extends PureComponent {
 
 			showErrorNotice( translate( 'Oops! Something went wrong. Please try again later.' ) );
 
-			return;
+			return false;
 		}
 
 		if ( transactionStatus === ORDER_TRANSACTION_STATUS.SUCCESS ) {
@@ -73,13 +73,15 @@ export class WechatPaymentQRCode extends PureComponent {
 				page( slug ? `/checkout/thank-you/${ slug }` : '/checkout/thank-you/no-site' );
 			}
 
-			return;
+			return false;
 		}
+
+		return true;
 	}
 
 	render() {
 		return <React.Fragment>
-			<QueryOrderTransaction orderId={ this.props.orderId } pollIntervalMs={ 1000 } />
+			<QueryOrderTransaction orderId={ this.props.orderId } pollIntervalMs={ 2000 } />
 
 			<p className="checkout__wechat-qrcode-instruction">
 				{ translate( 'Please scan the barcode using the WeChat Pay application to confirm your %(price)s payment.', {
