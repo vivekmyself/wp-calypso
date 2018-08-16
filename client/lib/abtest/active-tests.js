@@ -112,4 +112,14 @@ export default {
 		},
 		defaultVariation: 'control',
 	},
+	domainManagementSuggestion: {
+		datestamp: '20180726',
+		variations: {
+			domainsbot: 82,
+			group_6: 9,
+			group_7: 9,
+		},
+		defaultVariation: 'domainsbot',
+		assignmentMethod: 'userId',
+	},
 };

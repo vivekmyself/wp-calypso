@@ -861,6 +861,8 @@ class RegisterDomainStep extends React.Component {
 
 		if ( this.props.isSignupStep ) {
 			searchVendor = abtest( 'domainSuggestionKrakenV323' );
+		} else {
+			searchVendor = abtest( 'domainManagementSuggestion' );
 		}
 
 		enqueueSearchStatReport( { query: searchQuery, section: this.props.analyticsSection } );
