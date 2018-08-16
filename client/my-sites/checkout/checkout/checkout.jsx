@@ -337,8 +337,8 @@ export class Checkout extends React.Component {
 			const siteDesignType = get( selectedSite, 'options.design_type' );
 			const hasGoogleAppsInCart = cartItems.hasGoogleApps( cart );
 
-			// The onboarding checklist currently supports the blog type only.
-			if ( hasGoogleAppsInCart && domainReceiptId && 'blog' === siteDesignType ) {
+			// The onboarding checklist does not support the store type.
+			if ( hasGoogleAppsInCart && domainReceiptId && 'store' !== siteDesignType ) {
 				return `/checklist/${ selectedSiteSlug }?d=gsuite`;
 			}
 
