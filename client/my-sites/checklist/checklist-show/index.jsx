@@ -20,15 +20,11 @@ import getSiteChecklist from 'state/selectors/get-site-checklist';
 import { isJetpackSite, getSiteSlug } from 'state/sites/selectors';
 import QuerySiteChecklist from 'components/data/query-site-checklist';
 import { launchTask, tasks as wpcomTasks } from '../onboardingChecklist';
-import { loadTrackingTool, recordTracksEvent } from 'state/analytics/actions';
+import { recordTracksEvent } from 'state/analytics/actions';
 import { createNotice } from 'state/notices/actions';
 import { requestGuidedTour } from 'state/ui/guided-tours/actions';
 
 class ChecklistShow extends PureComponent {
-	componentDidMount() {
-		this.props.loadTrackingTool( 'HotJar' );
-	}
-
 	handleTaskStart = task => () => {
 		const { requestTour, siteSlug, track } = this.props;
 
@@ -91,7 +87,6 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-	loadTrackingTool,
 	track: recordTracksEvent,
 	notify: createNotice,
 	requestTour: requestGuidedTour,
