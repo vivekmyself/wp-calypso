@@ -695,6 +695,7 @@ class RegisterDomainStep extends React.Component {
 			tld_weight_overrides: getTldWeightOverrides( this.props.designType ),
 			vendor: searchVendor,
 			vertical: this.props.surveyVertical,
+			recommendationContext: get( this.props, 'selectedSite.name', null ),
 			...this.getActiveFiltersForAPI(),
 		};
 
