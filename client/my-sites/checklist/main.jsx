@@ -6,12 +6,11 @@ import page from 'page';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
-import { every, get, some } from 'lodash';
+import { some } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import WpcomChecklist from './wpcom-checklist';
 import ChecklistShowShare from './share';
 import DocumentHead from 'components/data/document-head';
 import EmptyContent from 'components/empty-content';
@@ -22,13 +21,15 @@ import Main from 'components/main';
 import PageViewTracker from 'lib/analytics/page-view-tracker';
 import QuerySiteChecklist from 'components/data/query-site-checklist';
 import SidebarNavigation from 'my-sites/sidebar-navigation';
+import WpcomChecklist from './wpcom-checklist';
 import { getCurrentUser } from 'state/current-user/selectors';
 import { getSelectedSiteId } from 'state/ui/selectors';
 import { getSiteSlug, isJetpackSite, isNewSite } from 'state/sites/selectors';
 import { isEnabled } from 'config';
-import getSiteChecklist from 'state/selectors/get-site-checklist';
 
 class ChecklistMain extends PureComponent {
+	state = { complete: false };
+
 	componentDidMount() {
 		this.maybeRedirectJetpack();
 	}
@@ -36,6 +37,12 @@ class ChecklistMain extends PureComponent {
 	componentDidUpdate( prevProps ) {
 		this.maybeRedirectJetpack( prevProps );
 	}
+
+	handleCompletionUpdate = ( { complete } ) => {
+		if ( complete !== this.state.complete ) {
+			this.setState( { complete } );
+		}
+	};
 
 	/**
 	 * Redirect Jetpack checklists to /plans/my-plan/:siteSlug
@@ -68,9 +75,10 @@ class ChecklistMain extends PureComponent {
 	}
 
 	renderHeader() {
-		const { displayMode, isChecklistComplete, isNewlyCreatedSite, translate } = this.props;
+		const { displayMode, isNewlyCreatedSite, translate } = this.props;
+		const { complete } = this.state;
 
-		if ( isChecklistComplete ) {
+		if ( complete ) {
 			return (
 				<>
 					<img
@@ -158,7 +166,7 @@ class ChecklistMain extends PureComponent {
 					<>
 						{ siteId && <QuerySiteChecklist siteId={ siteId } /> }
 						{ this.renderHeader() }
-						<WpcomChecklist />
+						<WpcomChecklist updateCompletion={ this.handleCompletionUpdate } />
 					</>
 				) : (
 					<EmptyContent title={ translate( 'Checklist not available for this site' ) } />
@@ -172,32 +180,10 @@ export default connect( state => {
 	const siteId = getSelectedSiteId( state );
 	const isAtomic = isSiteAutomatedTransfer( state, siteId );
 	const isJetpack = isJetpackSite( state, siteId );
-	const taskStatuses = get( getSiteChecklist( state, siteId ), [ 'tasks' ] );
-	const isChecklistComplete =
-		taskStatuses &&
-		every(
-			taskStatuses,
-			// eslint-disable-next-line wpcalypso/redux-no-bound-selectors
-			( task, taskId ) =>
-				/**
-				 * State contains extra tasks we don't render!
-				 * Ensure they don't impact completion status
-				 */
-				! [
-					'blogname_set',
-					'site_icon_set',
-					'blogdescription_set',
-					'avatar_uploaded',
-					'contact_page_updated',
-					'post_published',
-					'custom_domain_registered',
-				].includes( taskId ) || task.completed === true
-		);
 
 	return {
 		checklistAvailable: ! isAtomic && ( isEnabled( 'jetpack/checklist' ) || ! isJetpack ),
 		isAtomic,
-		isChecklistComplete,
 		isJetpack,
 		isNewlyCreatedSite: isNewSite( state, siteId ),
 		siteHasFreePlan: isSiteOnFreePlan( state, siteId ),

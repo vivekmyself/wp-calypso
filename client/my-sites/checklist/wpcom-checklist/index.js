@@ -91,7 +91,10 @@ class WpcomChecklist extends PureComponent {
 		return (
 			<>
 				{ siteId && <QuerySiteChecklist siteId={ siteId } /> }
-				<ChecklistComponent isPlaceholder={ ! taskStatuses }>
+				<ChecklistComponent
+					isPlaceholder={ ! taskStatuses }
+					updateCompletion={ this.props.updateCompletion }
+				>
 					<TaskComponent
 						completed
 						completedTitle={ translate( 'You created your site' ) }
