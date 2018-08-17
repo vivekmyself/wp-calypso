@@ -138,7 +138,7 @@ export class ChecklistBanner extends Component {
 						</Button>
 					</>
 				) : (
-					find( childrenArray, { 'props.completed': false } )
+					find( childrenArray, child => ! child.props.completed )
 				) }
 			</Card>
 		);
