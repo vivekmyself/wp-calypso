@@ -117,7 +117,7 @@ export class ChecklistBanner extends Component {
 				{ isFinished ? (
 					<>
 						<ChecklistBannerTask
-							title={ translate( 'Your site is ready to share' ) }
+							bannerImageSrc="/calypso/images/stats/tasks/ready-to-share.svg"
 							description={ translate(
 								'We did it! You have completed {{a}}all the tasks{{/a}} on our checklist.',
 								{
@@ -126,7 +126,7 @@ export class ChecklistBanner extends Component {
 									},
 								}
 							) }
-							bannerImageSrc="/calypso/images/stats/tasks/ready-to-share.svg"
+							title={ translate( 'Your site is ready to share' ) }
 						>
 							<ChecklistShowShare
 								className="checklist-banner__actions"
