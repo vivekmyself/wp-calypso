@@ -18,6 +18,7 @@ class ChecklistBannerTask extends PureComponent {
 		completed: PropTypes.bool,
 		description: PropTypes.node,
 		onClick: PropTypes.func,
+		siteSlug: PropTypes.string,
 		title: PropTypes.node.isRequired,
 		translate: PropTypes.func.isRequired,
 	};
@@ -44,11 +45,12 @@ class ChecklistBannerTask extends PureComponent {
 								{ buttonText }
 							</Button>
 						) }
-						{ this.props.children || (
-							<a href={ `/checklist/${ this.props.siteSlug }` } className="checklist-banner__link">
-								{ this.props.translate( 'View your checklist' ) }
-							</a>
-						) }
+						{ this.props.children ||
+							( siteSlug && (
+								<a href={ `/checklist/${ siteSlug }` } className="checklist-banner__link">
+									{ this.props.translate( 'View your checklist' ) }
+								</a>
+							) ) }
 					</div>
 				</div>
 				{ this.props.bannerImageSrc && (
