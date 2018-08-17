@@ -96,12 +96,14 @@ class WpcomChecklist extends PureComponent {
 						completed
 						completedTitle={ translate( 'You created your site' ) }
 						description={ translate( 'This is where your adventure begins.' ) }
+						siteSlug={ siteSlug }
 						title={ translate( 'Create your site' ) }
 					/>
 					<TaskComponent
 						completed
 						completedTitle={ translate( 'You picked a website address' ) }
 						description={ translate( 'Choose an address so people can find you on the internet.' ) }
+						siteSlug={ siteSlug }
 						title={ translate( 'Pick a website address' ) }
 					/>
 					<TaskComponent
@@ -117,6 +119,7 @@ class WpcomChecklist extends PureComponent {
 							url: `/settings/general/${ siteSlug }`,
 						} ) }
 						onDismiss={ this.handleTaskDismiss( 'blogname_set' ) }
+						siteSlug={ siteSlug }
 						title={ translate( 'Give your site a name' ) }
 					/>
 					<TaskComponent
@@ -134,6 +137,7 @@ class WpcomChecklist extends PureComponent {
 							url: `/settings/general/${ siteSlug }`,
 						} ) }
 						onDismiss={ this.handleTaskDismiss( 'site_icon_set' ) }
+						siteSlug={ siteSlug }
 						title={ translate( 'Upload a site icon' ) }
 					/>
 					<TaskComponent
@@ -151,6 +155,7 @@ class WpcomChecklist extends PureComponent {
 							url: `/settings/general/${ siteSlug }`,
 						} ) }
 						onDismiss={ this.handleTaskDismiss( 'blogdescription_set' ) }
+						siteSlug={ siteSlug }
 						title={ translate( 'Create a tagline' ) }
 					/>
 					<TaskComponent
@@ -168,6 +173,7 @@ class WpcomChecklist extends PureComponent {
 							url: '/me',
 						} ) }
 						onDismiss={ this.handleTaskDismiss( 'avatar_uploaded' ) }
+						siteSlug={ siteSlug }
 						title={ translate( 'Upload your profile picture' ) }
 					/>
 					<TaskComponent
@@ -185,6 +191,7 @@ class WpcomChecklist extends PureComponent {
 							url: `/post/${ siteSlug }/2`,
 						} ) }
 						onDismiss={ this.handleTaskDismiss( 'contact_page_updated' ) }
+						siteSlug={ siteSlug }
 						title={ translate( 'Personalize your Contact page' ) }
 					/>
 					<TaskComponent
@@ -200,6 +207,7 @@ class WpcomChecklist extends PureComponent {
 							url: `/post/${ siteSlug }`,
 						} ) }
 						onDismiss={ this.handleTaskDismiss( 'post_published' ) }
+						siteSlug={ siteSlug }
 						title={ translate( 'Publish your first blog post' ) }
 					/>
 					<TaskComponent
@@ -217,6 +225,7 @@ class WpcomChecklist extends PureComponent {
 							url: `/domains/add/${ siteSlug }`,
 						} ) }
 						onDismiss={ this.handleTaskDismiss( 'custom_domain_registered' ) }
+						siteSlug={ siteSlug }
 						title={ translate( 'Register a custom domain' ) }
 					/>
 				</ChecklistComponent>
