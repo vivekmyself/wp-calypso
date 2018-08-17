@@ -4,7 +4,7 @@
  */
 import page from 'page';
 import PropTypes from 'prop-types';
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
 import { isDesktop } from 'lib/viewport';
@@ -89,7 +89,7 @@ class WpcomChecklist extends PureComponent {
 		const TaskComponent = 'banner' === viewMode ? ChecklistBannerTask : Task;
 
 		return (
-			<Fragment>
+			<>
 				{ siteId && <QuerySiteChecklist siteId={ siteId } /> }
 				<ChecklistComponent isPlaceholder={ ! taskStatuses }>
 					<TaskComponent
@@ -229,7 +229,7 @@ class WpcomChecklist extends PureComponent {
 						title={ translate( 'Register a custom domain' ) }
 					/>
 				</ChecklistComponent>
-			</Fragment>
+			</>
 		);
 	}
 }

@@ -3,7 +3,7 @@
  * External dependencies
  */
 import page from 'page';
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 import { every, get, some } from 'lodash';
@@ -72,7 +72,7 @@ class ChecklistMain extends PureComponent {
 
 		if ( isChecklistComplete ) {
 			return (
-				<Fragment>
+				<>
 					<img
 						src="/calypso/images/signup/confetti.svg"
 						aria-hidden="true"
@@ -86,13 +86,13 @@ class ChecklistMain extends PureComponent {
 						) }
 					/>
 					<ChecklistShowShare className="checklist__share" siteSlug={ this.props.siteSlug } />
-				</Fragment>
+				</>
 			);
 		}
 
 		if ( isNewlyCreatedSite ) {
 			return (
-				<Fragment>
+				<>
 					<img
 						src="/calypso/images/signup/confetti.svg"
 						aria-hidden="true"
@@ -123,7 +123,7 @@ class ChecklistMain extends PureComponent {
 								  )
 						}
 					/>
-				</Fragment>
+				</>
 			);
 		}
 
@@ -155,11 +155,11 @@ class ChecklistMain extends PureComponent {
 				<SidebarNavigation />
 				<DocumentHead title={ translatedTitle } />
 				{ checklistAvailable ? (
-					<Fragment>
+					<>
 						{ siteId && <QuerySiteChecklist siteId={ siteId } /> }
 						{ this.renderHeader() }
 						<WpcomChecklist />
-					</Fragment>
+					</>
 				) : (
 					<EmptyContent title={ translate( 'Checklist not available for this site' ) } />
 				) }
