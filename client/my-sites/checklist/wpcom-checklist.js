@@ -3,6 +3,7 @@
  * External dependencies
  */
 import page from 'page';
+import PropTypes from 'prop-types';
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
@@ -24,6 +25,17 @@ import { requestGuidedTour } from 'state/ui/guided-tours/actions';
 import { requestSiteChecklistTaskUpdate } from 'state/checklist/actions';
 
 class WpcomChecklist extends PureComponent {
+	static propTypes = {
+		createNotice: PropTypes.func.isRequired,
+		loadTrackingTool: PropTypes.func.isRequired,
+		recordTracksEvent: PropTypes.func.isRequired,
+		requestGuidedTour: PropTypes.func.isRequired,
+		requestSiteChecklistTaskUpdate: PropTypes.func.isRequired,
+		siteId: PropTypes.number,
+		siteSlug: PropTypes.string,
+		taskStatuses: PropTypes.object,
+	};
+
 	componentDidMount() {
 		this.props.loadTrackingTool( 'HotJar' );
 	}
