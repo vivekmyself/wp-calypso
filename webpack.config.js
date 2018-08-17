@@ -203,7 +203,6 @@ function getWebpackConfig( {
 				},
 				{
 					test: /\.(sc|sa|c)ss$/,
-					exclude: stylesNamespacingExclude,
 					use: _.compact( [
 						...preSassLoaders,
 						stylesNamespacing && {
@@ -212,6 +211,7 @@ function getWebpackConfig( {
 						},
 						sassLoader,
 					] ),
+					...( stylesNamespacingExclude ? { exclude: stylesNamespacingExclude } : {} ),
 				},
 				stylesNamespacingExclude && {
 					test: /\.(sc|sa|c)ss$/,
