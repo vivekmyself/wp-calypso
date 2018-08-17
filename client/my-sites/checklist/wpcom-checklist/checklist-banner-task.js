@@ -23,13 +23,13 @@ class ChecklistBannerTask extends PureComponent {
 	};
 
 	render() {
-		const { completed, description, onClick, title, translate } = this.props;
-		const { buttonText = translate( 'Do it!' ) } = this.props;
-
 		// Banners never render completed Tasks
-		if ( completed ) {
+		if ( this.props.completed ) {
 			return null;
 		}
+
+		const { description, onClick, siteSlug, title, translate } = this.props;
+		const { buttonText = translate( 'Do it!' ) } = this.props;
 
 		/* eslint-disable wpcalypso/jsx-classname-namespace */
 
