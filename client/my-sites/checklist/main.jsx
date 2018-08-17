@@ -6,7 +6,7 @@ import page from 'page';
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
-import { some } from 'lodash';
+import { every, get, some } from 'lodash';
 
 /**
  * Internal dependencies
@@ -26,15 +26,7 @@ import { getCurrentUser } from 'state/current-user/selectors';
 import { getSelectedSiteId } from 'state/ui/selectors';
 import { getSiteSlug, isJetpackSite, isNewSite } from 'state/sites/selectors';
 import { isEnabled } from 'config';
-
-/**
- * Included to fix regression.
- * https://github.com/Automattic/wp-calypso/issues/26572
- * @TODO clean up module separation.
- */
 import getSiteChecklist from 'state/selectors/get-site-checklist';
-import { mergeObjectIntoArrayById } from './util';
-import { tasks as wpcomTasks } from './onboardingChecklist';
 
 class ChecklistMain extends PureComponent {
 	componentDidMount() {
@@ -76,10 +68,9 @@ class ChecklistMain extends PureComponent {
 	}
 
 	renderHeader() {
-		const { displayMode, isNewlyCreatedSite, tasks, translate } = this.props;
-		const completed = tasks && ! some( tasks, { completed: false } );
+		const { displayMode, isChecklistComplete, isNewlyCreatedSite, translate } = this.props;
 
-		if ( completed ) {
+		if ( isChecklistComplete ) {
 			return (
 				<Fragment>
 					<img
@@ -181,30 +172,37 @@ export default connect( state => {
 	const siteId = getSelectedSiteId( state );
 	const isAtomic = isSiteAutomatedTransfer( state, siteId );
 	const isJetpack = isJetpackSite( state, siteId );
-
-	/**
-	 * Included to fix regression.
-	 * https://github.com/Automattic/wp-calypso/issues/26572
-	 * @TODO clean up module separation.
-	 */
-	const siteChecklist = getSiteChecklist( state, siteId );
-	const tasksFromServer = siteChecklist && siteChecklist.tasks;
+	const taskStatuses = get( getSiteChecklist( state, siteId ), [ 'tasks' ] );
+	const isChecklistComplete =
+		taskStatuses &&
+		every(
+			taskStatuses,
+			// eslint-disable-next-line wpcalypso/redux-no-bound-selectors
+			( task, taskId ) =>
+				/**
+				 * State contains extra tasks we don't render!
+				 * Ensure they don't impact completion status
+				 */
+				! [
+					'blogname_set',
+					'site_icon_set',
+					'blogdescription_set',
+					'avatar_uploaded',
+					'contact_page_updated',
+					'post_published',
+					'custom_domain_registered',
+				].includes( taskId ) || task.completed === true
+		);
 
 	return {
 		checklistAvailable: ! isAtomic && ( isEnabled( 'jetpack/checklist' ) || ! isJetpack ),
 		isAtomic,
+		isChecklistComplete,
 		isJetpack,
 		isNewlyCreatedSite: isNewSite( state, siteId ),
 		siteHasFreePlan: isSiteOnFreePlan( state, siteId ),
 		siteId,
 		siteSlug: getSiteSlug( state, siteId ),
 		user: getCurrentUser( state ),
-
-		/**
-		 * Included to fix regression.
-		 * https://github.com/Automattic/wp-calypso/issues/26572
-		 * @TODO clean up module separation.
-		 */
-		tasks: tasksFromServer ? mergeObjectIntoArrayById( wpcomTasks, tasksFromServer ) : null,
 	};
 } )( localize( ChecklistMain ) );
