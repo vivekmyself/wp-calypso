@@ -1,5 +1,4 @@
 /** @format */
-
 /**
  * External dependencies
  */
@@ -14,15 +13,15 @@ import { localize } from 'i18n-calypso';
  * Internal dependencies
  */
 import Checklist from 'components/checklist';
-import Task from 'components/checklist/task';
-import { requestSiteChecklistTaskUpdate } from 'state/checklist/actions';
-import { getSelectedSiteId } from 'state/ui/selectors';
 import getSiteChecklist from 'state/selectors/get-site-checklist';
-import { getSiteSlug } from 'state/sites/selectors';
 import QuerySiteChecklist from 'components/data/query-site-checklist';
-import { loadTrackingTool, recordTracksEvent } from 'state/analytics/actions';
+import Task from 'components/checklist/task';
 import { createNotice } from 'state/notices/actions';
+import { getSelectedSiteId } from 'state/ui/selectors';
+import { getSiteSlug } from 'state/sites/selectors';
+import { loadTrackingTool, recordTracksEvent } from 'state/analytics/actions';
 import { requestGuidedTour } from 'state/ui/guided-tours/actions';
+import { requestSiteChecklistTaskUpdate } from 'state/checklist/actions';
 
 class WpcomChecklist extends PureComponent {
 	componentDidMount() {
