@@ -201,18 +201,15 @@ class WpcomChecklist extends PureComponent {
 	}
 }
 
-const mapStateToProps = state => {
-	const siteId = getSelectedSiteId( state );
-
-	return {
-		siteId,
-		siteSlug: getSiteSlug( state, siteId ),
-		taskStatuses: get( getSiteChecklist( state, siteId ), [ 'tasks' ] ),
-	};
-};
-
 export default connect(
-	mapStateToProps,
+	state => {
+		const siteId = getSelectedSiteId( state );
+		return {
+			siteId,
+			siteSlug: getSiteSlug( state, siteId ),
+			taskStatuses: get( getSiteChecklist( state, siteId ), [ 'tasks' ] ),
+		};
+	},
 	{
 		createNotice,
 		loadTrackingTool,
