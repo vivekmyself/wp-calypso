@@ -3,7 +3,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { localize } from 'i18n-calypso';
 
 /**
@@ -34,7 +34,7 @@ class ChecklistBannerTask extends PureComponent {
 		/* eslint-disable wpcalypso/jsx-classname-namespace */
 
 		return (
-			<Fragment>
+			<>
 				<div className="checklist-banner__content">
 					<h3 className="checklist-banner__title">{ title }</h3>
 					<p className="checklist-banner__description">{ description }</p>
@@ -59,7 +59,7 @@ class ChecklistBannerTask extends PureComponent {
 						src={ this.props.bannerImageSrc }
 					/>
 				) }
-			</Fragment>
+			</>
 		);
 	}
 }
