@@ -22,6 +22,7 @@ describe( 'reducer', () => {
 			'googleMyBusiness',
 			'guidedTour',
 			'hasSidebar',
+			'importers',
 			'isLoading',
 			'isNotificationsOpen',
 			'isPreviewShowing',
