@@ -11,7 +11,7 @@ import { some } from 'lodash';
 /**
  * Internal dependencies
  */
-import ChecklistShow from './checklist-show';
+import WpcomChecklist from './wpcom-checklist';
 import ChecklistShowShare from './share';
 import DocumentHead from 'components/data/document-head';
 import EmptyContent from 'components/empty-content';
@@ -167,7 +167,7 @@ class ChecklistMain extends PureComponent {
 					<Fragment>
 						{ siteId && <QuerySiteChecklist siteId={ siteId } /> }
 						{ this.renderHeader() }
-						<ChecklistShow />
+						<WpcomChecklist />
 					</Fragment>
 				) : (
 					<EmptyContent title={ translate( 'Checklist not available for this site' ) } />
