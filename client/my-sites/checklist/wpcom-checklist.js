@@ -53,11 +53,11 @@ class WpcomChecklist extends PureComponent {
 	};
 
 	handleTaskDismiss = taskId => () => {
-		const { notify, siteId, update } = this.props;
+		const { siteId } = this.props;
 
 		if ( taskId ) {
-			notify( 'is-success', 'You completed a task!' );
-			update( siteId, taskId );
+			this.props.createNotice( 'is-success', 'You completed a task!' );
+			this.props.requestSiteChecklistTaskUpdate( siteId, taskId );
 		}
 	};
 
@@ -211,15 +211,13 @@ const mapStateToProps = state => {
 	};
 };
 
-const mapDispatchToProps = {
-	loadTrackingTool,
-	recordTracksEvent,
-	notify: createNotice,
-	requestGuidedTour,
-	update: requestSiteChecklistTaskUpdate,
-};
-
 export default connect(
 	mapStateToProps,
-	mapDispatchToProps
+	{
+		createNotice,
+		loadTrackingTool,
+		recordTracksEvent,
+		requestGuidedTour,
+		requestSiteChecklistTaskUpdate,
+	}
 )( localize( WpcomChecklist ) );
