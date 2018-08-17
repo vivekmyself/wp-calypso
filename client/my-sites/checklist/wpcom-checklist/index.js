@@ -14,6 +14,8 @@ import { localize } from 'i18n-calypso';
  * Internal dependencies
  */
 import Checklist from 'components/checklist';
+import ChecklistBanner from './checklist-banner';
+import ChecklistBannerTask from './checklist-banner-task';
 import getSiteChecklist from 'state/selectors/get-site-checklist';
 import QuerySiteChecklist from 'components/data/query-site-checklist';
 import Task from 'components/checklist/task';
@@ -34,6 +36,11 @@ class WpcomChecklist extends PureComponent {
 		siteId: PropTypes.number,
 		siteSlug: PropTypes.string,
 		taskStatuses: PropTypes.object,
+		viewMode: PropTypes.oneOf( [ 'checklist', 'banner' ] ),
+	};
+
+	static defaultProps = {
+		viewMode: 'checklist',
 	};
 
 	componentDidMount() {
@@ -49,9 +56,11 @@ class WpcomChecklist extends PureComponent {
 			return;
 		}
 
+		const location = 'banner' === this.props.viewMode ? 'checklist_banner' : 'checklist_show';
+
 		this.props.recordTracksEvent( 'calypso_checklist_task_start', {
 			checklist_name: 'jetpack',
-			location: 'checklist_show',
+			location,
 			step_name: taskId,
 		} );
 
@@ -74,25 +83,28 @@ class WpcomChecklist extends PureComponent {
 	};
 
 	render() {
-		const { siteId, siteSlug, taskStatuses, translate } = this.props;
+		const { siteId, siteSlug, taskStatuses, translate, viewMode } = this.props;
+
+		const ChecklistComponent = 'banner' === viewMode ? ChecklistBanner : Checklist;
+		const TaskComponent = 'banner' === viewMode ? ChecklistBannerTask : Task;
 
 		return (
 			<Fragment>
 				{ siteId && <QuerySiteChecklist siteId={ siteId } /> }
-				<Checklist isPlaceholder={ ! taskStatuses }>
-					<Task
+				<ChecklistComponent isPlaceholder={ ! taskStatuses }>
+					<TaskComponent
 						completed
 						completedTitle={ translate( 'You created your site' ) }
 						description={ translate( 'This is where your adventure begins.' ) }
 						title={ translate( 'Create your site' ) }
 					/>
-					<Task
+					<TaskComponent
 						completed
 						completedTitle={ translate( 'You picked a website address' ) }
 						description={ translate( 'Choose an address so people can find you on the internet.' ) }
 						title={ translate( 'Pick a website address' ) }
 					/>
-					<Task
+					<TaskComponent
 						bannerImageSrc="/calypso/images/stats/tasks/personalize-your-site.svg"
 						completed={ this.isComplete( 'blogname_set' ) }
 						completedButtonText={ translate( 'Edit' ) }
@@ -107,7 +119,7 @@ class WpcomChecklist extends PureComponent {
 						onDismiss={ this.handleTaskDismiss( 'blogname_set' ) }
 						title={ translate( 'Give your site a name' ) }
 					/>
-					<Task
+					<TaskComponent
 						bannerImageSrc="/calypso/images/stats/tasks/upload-icon.svg"
 						completed={ this.isComplete( 'site_icon_set' ) }
 						completedButtonText={ translate( 'Change' ) }
@@ -124,7 +136,7 @@ class WpcomChecklist extends PureComponent {
 						onDismiss={ this.handleTaskDismiss( 'site_icon_set' ) }
 						title={ translate( 'Upload a site icon' ) }
 					/>
-					<Task
+					<TaskComponent
 						bannerImageSrc="/calypso/images/stats/tasks/create-tagline.svg"
 						completed={ this.isComplete( 'blogdescription_set' ) }
 						completedButtonText={ translate( 'Change' ) }
@@ -141,7 +153,7 @@ class WpcomChecklist extends PureComponent {
 						onDismiss={ this.handleTaskDismiss( 'blogdescription_set' ) }
 						title={ translate( 'Create a tagline' ) }
 					/>
-					<Task
+					<TaskComponent
 						bannerImageSrc="/calypso/images/stats/tasks/upload-profile-picture.svg"
 						completed={ this.isComplete( 'avatar_uploaded' ) }
 						completedButtonText={ translate( 'Change' ) }
@@ -158,7 +170,7 @@ class WpcomChecklist extends PureComponent {
 						onDismiss={ this.handleTaskDismiss( 'avatar_uploaded' ) }
 						title={ translate( 'Upload your profile picture' ) }
 					/>
-					<Task
+					<TaskComponent
 						bannerImageSrc="/calypso/images/stats/tasks/contact.svg"
 						completed={ this.isComplete( 'contact_page_updated' ) }
 						completedButtonText={ translate( 'Edit' ) }
@@ -175,7 +187,7 @@ class WpcomChecklist extends PureComponent {
 						onDismiss={ this.handleTaskDismiss( 'contact_page_updated' ) }
 						title={ translate( 'Personalize your Contact page' ) }
 					/>
-					<Task
+					<TaskComponent
 						bannerImageSrc="/calypso/images/stats/tasks/first-post.svg"
 						completed={ this.isComplete( 'post_published' ) }
 						completedButtonText={ translate( 'Edit' ) }
@@ -190,7 +202,7 @@ class WpcomChecklist extends PureComponent {
 						onDismiss={ this.handleTaskDismiss( 'post_published' ) }
 						title={ translate( 'Publish your first blog post' ) }
 					/>
-					<Task
+					<TaskComponent
 						bannerImageSrc="/calypso/images/stats/tasks/custom-domain.svg"
 						completed={ this.isComplete( 'custom_domain_registered' ) }
 						completedButtonText={ translate( 'Change' ) }
@@ -207,7 +219,7 @@ class WpcomChecklist extends PureComponent {
 						onDismiss={ this.handleTaskDismiss( 'custom_domain_registered' ) }
 						title={ translate( 'Register a custom domain' ) }
 					/>
-				</Checklist>
+				</ChecklistComponent>
 			</Fragment>
 		);
 	}
